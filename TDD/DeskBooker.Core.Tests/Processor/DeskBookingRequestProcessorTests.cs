@@ -1,7 +1,8 @@
-﻿using System;
+﻿using DeskBooker.Core.Processor;
+using System;
 using Xunit;
 
-namespace DeskBooker.Core.Tests.Processor
+namespace DeskBooker.Core.Domain.Processor
 {
     public class DeskBookingRequestProcessorTests
     {
