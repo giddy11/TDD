@@ -30,18 +30,6 @@ namespace DeskBooker.Core.Domain.Processor
         [Fact]
         public void ShouldReturnDeskBookingResultWithRequestValues()
         {
-            // Arrange
-            //var request = new DeskBookingRequest
-            //{
-            //    FirstName = "Gideon",
-            //    LastName = "Gideon",
-            //    Email = "Gideon",
-            //    Date = new DateTime(2022, 1, 25)
-            //};
-
-            // repeated the first time
-            //var processor = new DeskBookingRequestProcessor();
-
             // Act
             DeskBookingResult result = _processor.BookDesk(_request);
 
@@ -75,7 +63,7 @@ namespace DeskBooker.Core.Domain.Processor
 
             _processor.BookDesk(_request);
 
-            _deskBookingRepositoryMock.Verify(x => x.Save(It.IsAny<DeskBooking>()), Times.Once);
+            _deskBookingRepositoryMock.Verify(x => x.Save(It.IsAny<DeskBooking>()), Times.Exactly(1));
 
             Assert.NotNull(savedDeskBooking);
             Assert.Equal(_request.FirstName, savedDeskBooking.FirstName);
