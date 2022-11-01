@@ -10,6 +10,7 @@ namespace DeskBooker.Core.Domain.Processor
 {
     public class DeskBookingRequestProcessorTests
     {
+        #region Setup
         private readonly DeskBookingRequest _request;
         private readonly List<Desk> _availableDesks;
         private readonly Mock<IDeskBookingRepository> _deskBookingRepositoryMock;
@@ -18,7 +19,7 @@ namespace DeskBooker.Core.Domain.Processor
 
         public DeskBookingRequestProcessorTests()
         {
-             _request = new DeskBookingRequest
+            _request = new DeskBookingRequest
             {
                 FirstName = "Gideon",
                 LastName = "Gideon",
@@ -26,7 +27,7 @@ namespace DeskBooker.Core.Domain.Processor
                 Date = new DateTime(2022, 1, 25)
             };
 
-            _availableDesks = new List<Desk> { new Desk(7)}; 
+            _availableDesks = new List<Desk> { new Desk(7) };
 
             _deskBookingRepositoryMock = new Mock<IDeskBookingRepository>();
             _deskRepositoryMock = new Mock<IDeskRepository>();
@@ -35,6 +36,10 @@ namespace DeskBooker.Core.Domain.Processor
             _processor = new DeskBookingRequestProcessor(_deskBookingRepositoryMock.Object, _deskRepositoryMock.Object);
         }
 
+        #endregion
+
+
+        #region Test That Returns Desk Booking Result With Request Values
         [Fact]
         public void ShouldReturnDeskBookingResultWithRequestValues()
         {
@@ -49,6 +54,10 @@ namespace DeskBooker.Core.Domain.Processor
             Assert.Equal(_request.Date, result.Date);
         }
 
+        #endregion
+
+
+        #region Test That Should Throw Exception If Request Is Null
         [Fact]
         public void ShouldThrowExceptionIfRequestIsNull()
         {
@@ -60,6 +69,10 @@ namespace DeskBooker.Core.Domain.Processor
             Assert.Equal("request", exception.ParamName);
         }
 
+        #endregion
+
+
+        #region Test That Should Save Desk Booking
         [Fact]
         public void ShouldSaveDeskBooking()
         {
@@ -81,6 +94,10 @@ namespace DeskBooker.Core.Domain.Processor
             Assert.Equal(_availableDesks.First().Id, savedDeskBooking.DeskId);
         }
 
+        #endregion
+
+
+        #region Test That Should Not Save Desk Booking If No Desk Is Available
         [Fact]
         public void ShouldNotSaveDeskBookingIfNoDeskIsAvailable()
         {
@@ -90,6 +107,28 @@ namespace DeskBooker.Core.Domain.Processor
 
             _deskBookingRepositoryMock.Verify(x => x.Save(It.IsAny<DeskBooking>()), Times.Never);
         }
+
+        #endregion
+
+
+        #region Test THat Should Return Expected Result Code
+        [Theory]
+        [InlineData(DeskBookingResultCode.Success, true)]
+        [InlineData(DeskBookingResultCode.NoDeskAvailable, false)]
+        public void ShouldReturnExpectedResultCode(DeskBookingResultCode expectedResultCode, bool isDeskAvailable)
+        {
+            if (!isDeskAvailable)
+            {
+                _availableDesks.Clear();
+            }
+
+            var result = _processor.BookDesk(_request);
+
+            Assert.Equal(expectedResultCode, result.Code);
+        }
+
+        #endregion
+
 
     }
 }

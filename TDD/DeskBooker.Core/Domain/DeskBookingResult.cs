@@ -2,5 +2,6 @@
 {
     public class DeskBookingResult : DeskBookingBase
     {
+        public DeskBookingResultCode Code { get; set; }
     }
 }
